@@ -1478,7 +1478,9 @@ export class DaterangepickerComponent implements OnInit, OnChanges, ControlValue
       }
     } else if (date.isAfter(this.rightCalendar.month, 'month')) {
       this.rightCalendar.month = month;
-      if (this.linkedCalendars) {
+      // Keep the two panes adjacent for keyboard focus even when linkedCalendars
+      // is false (the default). Mouse next/prev still move one side alone.
+      if (!this.singleDatePicker) {
         this.leftCalendar.month = month.subtract(1, 'month');
       }
     } else {

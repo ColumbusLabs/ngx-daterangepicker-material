@@ -137,6 +137,25 @@ describe('Calendar keyboard navigation (issue #113)', () => {
     expect(focused()).toBe('January 10, 2026');
   });
 
+  it('keeps unlinked months adjacent when keyboard focus advances past the right month', async () => {
+    await create();
+    focusGrid();
+    expect(picker().linkedCalendars).toBeFalse();
+
+    // Three PageDowns from November land on February; without the fix the left
+    // calendar stays on November while the right jumps to February.
+    press('PageDown');
+    press('PageDown');
+    press('PageDown');
+
+    expect(focused()).toBe('February 10, 2027');
+    expect(picker().isMonthShown(dayjs('2027-02-10'))).toBeTrue();
+    expect(picker().rightCalendar.month.format('YYYY-MM')).toBe('2027-02');
+    expect(picker().leftCalendar.month.format('YYYY-MM')).toBe('2027-01');
+    expect(picker().rightCalendar.month.diff(picker().leftCalendar.month, 'month')).toBe(1);
+    expect(tabStops().length).toBe(1);
+  });
+
   it('chooses the start and the end date with Enter and Space', async () => {
     await create();
     focusGrid();
